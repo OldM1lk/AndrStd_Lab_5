@@ -48,13 +48,13 @@ class MainActivity : AppCompatActivity() {
                 val response = client.newCall(request).execute()
                 val responseBody = response.body
                 val json = responseBody?.string()
-                val wrapper = Gson().fromJson(json, Wrapper::class.java)
-                wrapper.contacts.forEach { contact ->
+                val wrapper = Gson().fromJson(json, Array<Contact>::class.java).toList()
+                wrapper.forEach { contact ->
                     Timber.d(contact.toString())
                 }
 
                 runOnUiThread {
-                    adapter = ContactAdapter(wrapper.contacts)
+                    adapter = ContactAdapter(wrapper)
                     rView.adapter = adapter
                 }
             }
@@ -74,10 +74,6 @@ data class Contact(
     val name: String,
     val phone: String,
     val type: String
-)
-
-data class Wrapper(
-    val contacts: List<Contact>
 )
 
 class ContactAdapter(private var contacts: List<Contact>) : RecyclerView.Adapter<ContactAdapter.ViewHolder>() {
