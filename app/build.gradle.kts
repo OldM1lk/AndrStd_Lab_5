@@ -45,4 +45,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation (libs.timber)
+    implementation(libs.gson)
+    implementation(libs.okhttp)
+    implementation(libs.glide)
+    implementation(libs.androidx.recyclerview)
 }
