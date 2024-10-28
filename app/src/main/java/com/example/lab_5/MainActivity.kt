@@ -22,7 +22,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import timber.log.Timber
 import java.io.IOException
-import java.net.URL
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         Timber.plant(Timber.DebugTree())
 
         val client = OkHttpClient()
-        val url = URL("https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=ff49fcd4d4a08aa6aafb6ea3de826464&tags=cat&format=json&nojsoncallback=1")
+        val url = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=ff49fcd4d4a08aa6aafb6ea3de826464&tags=cat&format=json&nojsoncallback=1"
         val request = Request.Builder().url(url).build()
 
         Thread {
@@ -105,7 +104,7 @@ class GridListAdapter(private val context: Context, private val linksList: List<
         val imageView: ImageView = view.findViewById(R.id.imageView)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GridListAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutView = LayoutInflater.from(parent.context).inflate(R.layout.rview_item, parent, false)
         return ViewHolder(layoutView)
     }
