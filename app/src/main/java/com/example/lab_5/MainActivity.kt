@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
             catch (e: IOException) {
                 Timber.e("Ошибка: ${e.message}")
             }
-        }
+        }.start()
     }
 
     private fun displayImages(context: Context, linksList: List<String>) {
