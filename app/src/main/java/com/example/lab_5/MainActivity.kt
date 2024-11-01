@@ -1,13 +1,8 @@
 package com.example.lab_5
 
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -15,6 +10,10 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import timber.log.Timber
@@ -33,90 +32,57 @@ class MainActivity : AppCompatActivity() {
 
         Timber.plant(Timber.DebugTree())
 
-        val client = OkHttpClient()
-        val url = "https://drive.google.com/u/0/uc?id=1-KO-9GA3NzSgIc1dkAsNm8Dqw0fuPxcR&export=download"
-        val request = Request.Builder().url(url).build()
-
         lateinit var adapter: ContactAdapter
+        lateinit var allContacts: List<Contact>
         val btnSearch: Button = findViewById(R.id.btn_search)
         val etSearch: EditText = findViewById(R.id.et_search)
         val rView: RecyclerView = findViewById(R.id.rView)
         rView.layoutManager = LinearLayoutManager(this)
 
-        Thread {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = client.newCall(request).execute()
-                val responseBody = response.body
-                val json = responseBody?.string()
-                val wrapper = Gson().fromJson(json, Array<Contact>::class.java).toList()
-                wrapper.forEach { contact ->
-                    Timber.d(contact.toString())
-                }
-
-                runOnUiThread {
-                    adapter = ContactAdapter(wrapper)
+                val contacts = fetchContacts()
+                allContacts = contacts
+                withContext(Dispatchers.Main) {
+                    adapter = ContactAdapter(contacts)
                     rView.adapter = adapter
                 }
             }
             catch (e: IOException) {
-                Timber.e("Ошибка запроса")
+                Timber.e("Ошибка запроса: ${e.message}")
             }
-        }.start()
+        }
 
         btnSearch.setOnClickListener {
             val query = etSearch.text.toString()
-            adapter.filter(query)
+            val filteredContacts = filterContacts(allContacts, query)
+            adapter.updateContacts(filteredContacts)
         }
     }
-}
 
-data class Contact(
-    val name: String,
-    val phone: String,
-    val type: String
-)
+    private suspend fun fetchContacts(): List<Contact> {
+        val client = OkHttpClient()
+        val url = "https://drive.google.com/u/0/uc?id=1-KO-9GA3NzSgIc1dkAsNm8Dqw0fuPxcR&export=download"
+        val request = Request.Builder().url(url).build()
 
-class ContactAdapter(private var contacts: List<Contact>) : RecyclerView.Adapter<ContactAdapter.ViewHolder>() {
-    private var allContacts: List<Contact> = contacts
-
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val name: TextView = view.findViewById(R.id.textName)
-        val phone: TextView = view.findViewById(R.id.textPhone)
-        val type: TextView = view.findViewById(R.id.textType)
+        return withContext(Dispatchers.IO) {
+            val response = client.newCall(request).execute()
+            val responseBody = response.body
+            val json = responseBody?.string()
+            Gson().fromJson(json, Array<Contact>::class.java).toList()
+        }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.rview_item, parent, false)
-        return ViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val contact = contacts[position]
-        holder.name.text = contact.name
-        holder.phone.text = contact.phone
-        holder.type.text = contact.type
-    }
-
-    override fun getItemCount(): Int {
-        return contacts.size
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    private fun updateContacts(newContacts: List<Contact>) {
-        contacts = newContacts
-        notifyDataSetChanged()
-    }
-
-    fun filter(query: String) {
-        contacts = if (query.isEmpty()) {
+    private fun filterContacts(allContacts: List<Contact>, query: String): List<Contact> {
+        return if (query.isEmpty()) {
             allContacts
-        } else {
+        }
+        else {
             allContacts.filter {
                 it.name.contains(query, ignoreCase = true) ||
                         it.phone.contains(query) ||
                         it.type.contains(query, ignoreCase = true)
             }
         }
-        updateContacts(contacts)
     }
 }

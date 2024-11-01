@@ -48,4 +48,5 @@ dependencies {
     implementation (libs.timber)
     implementation(libs.okhttp)
     implementation (libs.gson)
+    implementation(libs.kotlinx.coroutines.android)
 }
