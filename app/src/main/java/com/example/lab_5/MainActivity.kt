@@ -43,7 +43,8 @@ class MainActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     displayImages(linksList)
                 }
-            } catch (e: IOException) {
+            }
+            catch (e: IOException) {
                 Timber.e("Ошибка: ${e.message}")
             }
         }
