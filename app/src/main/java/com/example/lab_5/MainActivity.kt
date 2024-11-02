@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val linksList = fetchPhotoLinks(url)
+                val linksList = parsePhotos(url)
 
                 withContext(Dispatchers.Main) {
                     displayImages(linksList)
@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun fetchPhotoLinks(url: String): List<String> {
+    private fun parsePhotos(url: String): List<String> {
         val client = OkHttpClient()
         val request = Request.Builder().url(url).build()
         val response = client.newCall(request).execute()
