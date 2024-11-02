@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val contacts = fetchContacts()
+                val contacts = parseContacts()
                 allContacts = contacts
                 withContext(Dispatchers.Main) {
                     adapter = ContactAdapter(contacts)
@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun fetchContacts(): List<Contact> {
+    private suspend fun parseContacts(): List<Contact> {
         val client = OkHttpClient()
         val url = "https://drive.google.com/u/0/uc?id=1-KO-9GA3NzSgIc1dkAsNm8Dqw0fuPxcR&export=download"
         val request = Request.Builder().url(url).build()
