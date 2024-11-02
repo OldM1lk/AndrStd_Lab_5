@@ -45,4 +45,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation (libs.timber)
+    implementation(libs.okhttp)
+    implementation (libs.gson)
+    implementation(libs.kotlinx.coroutines.android)
 }
