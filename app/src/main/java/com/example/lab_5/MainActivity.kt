@@ -4,7 +4,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -82,7 +81,5 @@ class MainActivity : AppCompatActivity() {
         val clip = ClipData.newPlainText("Copied", link)
         clipboard.setPrimaryClip(clip)
         Timber.i(link)
-        Toast.makeText(this, "Ссылка скопирована", Toast.LENGTH_SHORT).show()
     }
 }
-

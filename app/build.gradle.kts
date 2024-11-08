@@ -48,7 +48,7 @@ dependencies {
     implementation (libs.timber)
     implementation(libs.gson)
     implementation(libs.okhttp)
-    implementation (libs.glide)
+    implementation(libs.glide)
     implementation(libs.androidx.recyclerview)
     implementation(libs.kotlinx.coroutines.android)
 }
